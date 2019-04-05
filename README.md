@@ -62,4 +62,4 @@ Here is the generated image through different intervals of the run.
 ## Acknowledgments
 
 * Project is based on **Leon A. Gaty's** paper, [*A Neural Algorithm of Artistic Style*](https://arxiv.org/abs/1508.06576)
-* Project is inspired by **Raymond Yuan's** blog, [*Neural Style Transfer, on Medium*](https://medium.com/tensorflow/neural-style-transfer-creating-art-with-deep-learning-using-tf-keras-and-eager-execution-7d541ac31398)
+* Project is inspired by **Raymond Yuan's** blog, [*Neural Style Transfer*](https://medium.com/tensorflow/neural-style-transfer-creating-art-with-deep-learning-using-tf-keras-and-eager-execution-7d541ac31398)
