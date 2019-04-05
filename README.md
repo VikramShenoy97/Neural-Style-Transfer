@@ -19,11 +19,13 @@ pip install Pillow
 
 ### Images
 
-Content Image - A picture taken by me while on my trip to Amsterdam.
-![**Content_Image**](https://github.com/VikramShenoy97/Neural-Style-Transfer/blob/master/Input_Images/Amsterdam.jpg)
+#### Content Image - A picture taken by me while on my trip to Amsterdam.
 
-Style Image - Starry Night by Vincent Van Gogh.
-![**Style_Image**](https://github.com/VikramShenoy97/Neural-Style-Transfer/blob/master/Input_Images/Starry_Night.jpg)
+![Content_Image](https://github.com/VikramShenoy97/Neural-Style-Transfer/blob/master/Input_Images/Amsterdam.jpg)
+
+#### Style Image - Starry Night by Vincent Van Gogh.
+
+![Style_Image](https://github.com/VikramShenoy97/Neural-Style-Transfer/blob/master/Input_Images/Starry_Night.jpg)
 
 
 ### Run
