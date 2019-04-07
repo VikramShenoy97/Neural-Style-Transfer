@@ -45,6 +45,10 @@ Here is the generated image through different intervals of the run.
 
 ![Intermediate_Image](https://github.com/VikramShenoy97/Neural-Style-Transfer/blob/master/Output_Images/Intermediate_Images.jpg)
 
+### Transition through epochs
+
+![Transition](https://github.com/VikramShenoy97/Neural-Style-Transfer/blob/master/Transition/nst.gif)
+
 ### Result of Style Transfer
 
 ![Final_Image](https://github.com/VikramShenoy97/Neural-Style-Transfer/blob/master/Output_Images/Style_Transfer.jpg)
