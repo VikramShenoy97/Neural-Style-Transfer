@@ -191,6 +191,21 @@ class NeuralStyleTransfer():
                 final_image = self._deprocess_image(final_image)
             if(self.verbose == True):
                 print "Epoch Number %d : Completed" % (i+1)
+
+            # This part of the code is for smaller intervals(Every 4th iteration),
+            #inorder to make the .gif file.
+            """
+            if i%4 == 0:
+                transition_image = generated_image.numpy()
+                transition_image = self._deprocess_image(transition_image)
+
+                plt.axis('off')
+                plt.axes([0., 0., 1., 1.0], frameon=False, xticks=[], yticks=[])
+                plt.imshow(transition_image)
+                plt.savefig("Transition/nst_%d.jpg" % i, bbox_inches=None, pad_inches=0)
+                plt.close()
+            """
+            
             if i % display_interval == 0:
                 intermediate_image = generated_image.numpy()
                 intermediate_image = self._deprocess_image(intermediate_image)
