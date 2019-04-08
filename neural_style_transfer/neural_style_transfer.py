@@ -8,6 +8,25 @@ import tensorflow.contrib.eager as tfe
 
 
 class NeuralStyleTransfer():
+    """
+        Neural Style Transfer
+
+        Parameters
+        ----------
+        number_of_epochs : int, Optional (default = 1000)
+        Number of iterations for training.
+
+        content_weight : int, Optional (default  = 1e3)
+        Affects the content loss. Should be comparatively much higher.
+
+        style_weight : int, Optional (default=1e-2)
+        Affects the style loss. Should be comparatively much lower.
+
+        verbose : boolean, Optional (default=False)
+        Controls verbosity of output:
+        - False: No Output
+        - True: Displays the completed epoch.
+    """
     def __init__(self, number_of_epochs=1000, content_weight=1e3, style_weight=1e-2, verbose=False):
         self.number_of_epochs = number_of_epochs
         self.content_weight = content_weight
@@ -20,12 +39,38 @@ class NeuralStyleTransfer():
             print "Eager Execution: {}".format(tf.executing_eagerly())
 
     def perform(self, content_file, style_file):
+        """
+        Performs Neural Style Transfer
+
+        Parameters
+        ----------
+        content_file : image
+            Content Image.
+        style_file : image
+            Style Image.
+
+		Returns
+        -------
+        final_image : image
+            Returns the final output of style transfer.
+        """
         return self._perform(content_file, style_file)
 
     def show_image(self, image):
+        """
+            Displays and stores the image.
+
+            Parameters
+            ----------
+            image : image
+                Final Image.
+        """
         return self._show_image(image)
 
     def _load_image(self, filename):
+        """
+        Loads the image and corrects its dimensions.
+        """
         img = Image.open(filename)
         # Downsample Image using Image.ANTIALIAS
         img = img.resize((img.size[0], img.size[1]), Image.ANTIALIAS)
@@ -38,6 +83,9 @@ class NeuralStyleTransfer():
         return img
 
     def _preprocess_image(self, filename):
+        """
+        Preprocesses the image into the necessary format.
+        """
         img = self._load_image(filename)
         # Preprocess Image to VGG19 Input format (Subtracts Input by VGG Mean and
         # uses cv2 to open the image which uses BGR format)
@@ -49,6 +97,9 @@ class NeuralStyleTransfer():
         return img
 
     def _deprocess_image(self, processed_image):
+        """
+        Deprocess the processed image.
+        """
         x = processed_image.copy()
         if(len(x.shape) == 4):
             x = np.squeeze(x)
@@ -66,6 +117,10 @@ class NeuralStyleTransfer():
         return x
 
     def _get_model(self):
+        """
+        Fetches the appropriate layers of the VGG19 Model and activates only
+        those layers.
+        """
         vgg_model = tf.keras.applications.vgg19.VGG19(include_top = False, weights='imagenet')
         vgg_model.trainable = False
         if(self.verbose == True):
@@ -79,13 +134,16 @@ class NeuralStyleTransfer():
         return models.Model(vgg_model.inputs, model_outputs)
 
     def _get_activations(self, model, content_file, style_file):
+        """
+        Get activations of the selected layers.
+        """
         content_image = self._preprocess_image(content_file)
         style_image = self._preprocess_image(style_file)
 
         content_outputs = model(content_image)
         style_outputs = model(style_image)
 
-        # Get activations of respective layers. content_layer[0] is done ton convert
+        # Get activations of respective layers. content_layer[0] is done to convert
         # list shape of (1, X, X, X) to (X, X, X)
         content_image_activations = [content_layer[0] for content_layer in content_outputs[len(self.style_layers):]]
         style_image_activations = [style_layer[0] for style_layer in style_outputs[:len(self.style_layers)]]
@@ -93,10 +151,16 @@ class NeuralStyleTransfer():
         return content_image_activations, style_image_activations
 
     def _content_loss_computation(self, content_image_activations, generated_image_activations):
+        """
+        Computes the Content Loss.
+        """
         # Content Loss Computation
         return tf.reduce_mean(tf.square(content_image_activations - generated_image_activations))
 
     def _gram_matrix_computation(self, input_activations):
+        """
+        Computes the Gram Matrix.
+        """
         # Gram Matrix Computation
         channels = input_activations.shape[-1]
         activations = tf.reshape(input_activations, [-1, channels])
@@ -106,10 +170,16 @@ class NeuralStyleTransfer():
         return gram_matrix
 
     def _style_loss_computation(self, gram_matrix_style_image, gram_matrix_generated_image):
+        """
+        Computes the Style Loss.
+        """
         # Style Loss Computation
         return tf.reduce_mean(tf.square(gram_matrix_style_image - gram_matrix_generated_image))
 
     def _compute_overall_loss(self, model, loss_weights, generated_image, content_image_activations, style_image_activations):
+        """
+        Computes the Overall Loss (Content Loss + Style Loss).
+        """
         # While training, first the style loss decreases rapidly to some small value.
         #After the content loss starts decreasing, the style loss either decreases
         #much more slowly or fluctuates.
@@ -146,6 +216,9 @@ class NeuralStyleTransfer():
         return overall_loss, content_loss, style_loss
 
     def _compute_gradients(self, parameters):
+        """
+        Determines the gradients for optimization.
+        """
         with tf.GradientTape() as g:
             losses = self._compute_overall_loss(**parameters)
         overall_loss = losses[0]
@@ -153,6 +226,10 @@ class NeuralStyleTransfer():
         return g.gradient(overall_loss, parameters['generated_image']), losses
 
     def _perform(self, content_file, style_file):
+        """
+        Performs Neural Style Transfer and saves the intermediate stages of
+        the style transfer process.
+        """
         # Run Neural Style Transfer.
         model = self._get_model()
         for layer in model.layers:
@@ -205,7 +282,7 @@ class NeuralStyleTransfer():
                 plt.savefig("Transition/nst_%d.jpg" % i, bbox_inches=None, pad_inches=0)
                 plt.close()
             """
-            
+
             if i % display_interval == 0:
                 intermediate_image = generated_image.numpy()
                 intermediate_image = self._deprocess_image(intermediate_image)
@@ -225,6 +302,9 @@ class NeuralStyleTransfer():
         return final_image
 
     def _show_image(self, image):
+        """
+        Displays the final image.
+        """
         # Display the final image.
         plt.axis('off')
         plt.axes([0., 0., 1., 1.0], frameon=False, xticks=[], yticks=[])
